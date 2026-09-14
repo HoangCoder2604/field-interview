@@ -1,4 +1,4 @@
-const CACHE_NAME = "field-interview-shell-v3";
+const CACHE_NAME = "field-interview-shell-v6";
 
 const APP_SHELL = [
   "./",
@@ -11,6 +11,7 @@ const APP_SHELL = [
   "./styles/responsive.css",
 
   "./src/app.js",
+
   "./src/data/database.js",
 
   "./src/services/image.js",
@@ -38,7 +39,9 @@ const APP_SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(APP_SHELL);
+    })
   );
 
   self.skipWaiting();
@@ -55,73 +58,70 @@ self.addEventListener("activate", (event) => {
             .map((key) => caches.delete(key))
         )
       )
+      .then(() => self.clients.claim())
   );
-
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  const request = event.request;
 
+  if (request.method !== "GET") {
+    return;
+  }
+
+  const url = new URL(request.url);
+
+  // Không cache API ngoài domain như Google Apps Script
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // Khi reload trang offline -> trả index.html
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const copy = response.clone();
+
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put("./index.html", copy);
+          });
+
+          return response;
+        })
+        .catch(async () => {
+          return (
+            (await caches.match(request)) ||
+            (await caches.match("./index.html"))
+          );
+        })
+    );
+
+    return;
+  }
+
+  // CSS / JS / icon: cache trước, mạng sau
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      return fetch(event.request)
-        .then((networkResponse) => {
-          const responseClone = networkResponse.clone();
+      return fetch(request).then((networkResponse) => {
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          networkResponse.type === "basic"
+        ) {
+          const copy = networkResponse.clone();
 
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
+            cache.put(request, copy);
           });
-
-          return networkResponse;
-        })
-        .catch(() => {
-          if (event.request.mode === "navigate") {
-            return caches.match("./index.html");
-          }
-
-          return Response.error();
-        });
-    })
-  );
-});
-
-self.addEventListener("sync", (event) => {
-  if (event.tag !== "sync-interviews") return;
-
-  event.waitUntil(
-    self.clients
-      .matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      })
-      .then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({ type: "SYNC_REQUESTED" });
-        });
-      })
-  );
-});
-
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-
-  event.waitUntil(
-    self.clients
-      .matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      })
-      .then((clients) => {
-        if (clients.length > 0) {
-          return clients[0].focus();
         }
 
-        return self.clients.openWindow("./");
-      })
+        return networkResponse;
+      });
+    })
   );
 });
