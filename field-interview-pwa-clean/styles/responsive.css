@@ -1,0 +1,145 @@
+/* Tablet */
+@media (max-width: 900px) {
+  .app-shell {
+    padding-inline: 14px;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-grid .card:last-child {
+    grid-column: auto;
+  }
+
+  .history-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .topbar {
+    min-height: 72px;
+    padding-top: max(14px, env(safe-area-inset-top));
+  }
+
+  .topbar__identity .eyebrow {
+    display: none;
+  }
+
+  .tabs {
+    top: 72px;
+  }
+
+  .app-shell {
+    padding-top: 14px;
+  }
+
+  .card {
+    border-radius: 16px;
+  }
+
+  .session-summary,
+  .section-title,
+  .section-header {
+    align-items: flex-start;
+  }
+
+  .section-title,
+  .section-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field--wide {
+    grid-column: auto;
+  }
+
+  .input-action {
+    grid-template-columns: 1fr;
+  }
+
+  .input-action .button {
+    width: 100%;
+  }
+
+  .form-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions .button,
+  .section-header .button {
+    width: 100%;
+  }
+
+  .history-top {
+    flex-direction: column;
+  }
+
+  .detail-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* Very small devices */
+@media (max-width: 380px) {
+  .topbar {
+    gap: 8px;
+  }
+
+  .topbar h1 {
+    font-size: 1.08rem;
+  }
+
+  .badge {
+    padding-inline: 8px;
+    font-size: 0.7rem;
+  }
+
+  .tab {
+    padding-inline: 4px;
+    font-size: 0.86rem;
+  }
+
+  .session-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .session-summary__right {
+    text-align: left;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1100px) {
+  .app-shell {
+    padding-top: 28px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .form-grid {
+    column-gap: 20px;
+    row-gap: 18px;
+  }
+}
+
+/* Accessibility: reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
