@@ -7,13 +7,22 @@ import { showSyncSuccessNotification } from "./notifications.js";
 import { isNetworkConnected } from "./network.js";
 
 const API_URL_KEY = "fieldInterviewApiUrl";
+const DEFAULT_API_URL =
+  "https://script.google.com/macros/s/AKfycbyFCe57R1mxWbF7oixC5nAcyQKcSRUdROKFmBUI46Q3I-e2OD-EZ7tuNUh60Ko5HfxEwg/exec";
 
 export function getApiUrl() {
-  return localStorage.getItem(API_URL_KEY) || "";
+  return localStorage.getItem(API_URL_KEY)?.trim() || DEFAULT_API_URL;
 }
 
 export function setApiUrl(url) {
-  localStorage.setItem(API_URL_KEY, url.trim());
+  const normalizedUrl = url.trim();
+
+  if (!normalizedUrl || normalizedUrl === DEFAULT_API_URL) {
+    localStorage.removeItem(API_URL_KEY);
+    return;
+  }
+
+  localStorage.setItem(API_URL_KEY, normalizedUrl);
 }
 
 async function syncInterview(record) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "field-interview-shell-v7";
+const CACHE_NAME = "field-interview-shell-v8";
 
 const APP_SHELL = [
   "./",

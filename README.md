@@ -128,6 +128,10 @@ thư mục này được tạo lại từ `dist/` mỗi lần chạy `cap sync`.
 
 ## Google Sheet
 
+Project đã có sẵn Google Apps Script Web App URL mặc định để bản PWA và Android
+có thể đồng bộ ngay trên thiết bị mới. Người dùng vẫn có thể nhập endpoint khác
+trong **Cài đặt**; để trống hoặc nhập lại URL mặc định sẽ quay về cấu hình chung.
+
 1. Tạo Google Sheet.
 2. Extensions > Apps Script.
 3. Dán `google-apps-script/Code.gs`.
