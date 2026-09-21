@@ -1,5 +1,11 @@
 node_modules/
 dist/
+.gradle-user-home/
+.android-user-home/
 .vercel/
 .DS_Store
 *.log
+/MINI-PROJECT-1-REPORT.md
+/output/pdf/MINI-PROJECT-1-REPORT.pdf
+/tmp/pdfs/
+/docs/screenshots/

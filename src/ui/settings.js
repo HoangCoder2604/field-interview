@@ -33,18 +33,23 @@ export function createSettingsController({ elements, showToast }) {
   }
 
   async function enableNotifications() {
-    const result = await requestNotificationPermission();
+    try {
+      const result = await requestNotificationPermission();
 
-    if (!result.supported) {
-      showToast("Trình duyệt không hỗ trợ notification.");
-      return;
+      if (!result.supported) {
+        showToast("Thiết bị hoặc trình duyệt không hỗ trợ thông báo.");
+        return;
+      }
+
+      showToast(
+        result.permission === "granted"
+          ? "Đã bật thông báo."
+          : "Bạn chưa cấp quyền thông báo."
+      );
+    } catch (error) {
+      console.error("Không thể bật thông báo:", error);
+      showToast("Không thể bật thông báo. Hãy kiểm tra quyền của ứng dụng.");
     }
-
-    showToast(
-      result.permission === "granted"
-        ? "Đã bật thông báo."
-        : "Bạn chưa cấp quyền thông báo."
-    );
   }
 
   function init() {

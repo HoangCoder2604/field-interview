@@ -4,6 +4,7 @@ import {
 } from "../data/database.js";
 
 import { showSyncSuccessNotification } from "./notifications.js";
+import { isNetworkConnected } from "./network.js";
 
 const API_URL_KEY = "fieldInterviewApiUrl";
 
@@ -57,7 +58,7 @@ async function syncInterview(record) {
 }
 
 export async function syncPendingInterviews() {
-  if (!navigator.onLine) {
+  if (!isNetworkConnected()) {
     return {
       successCount: 0,
       failedCount: 0,
@@ -89,7 +90,13 @@ export async function syncPendingInterviews() {
   }
 
   if (successCount > 0) {
-    await showSyncSuccessNotification(successCount);
+    try {
+      await showSyncSuccessNotification(successCount);
+    } catch (error) {
+      // Dữ liệu đã đồng bộ thành công; lỗi hiển thị thông báo không được làm
+      // thay đổi kết quả đồng bộ hoặc khiến bản ghi được gửi lại.
+      console.warn("Không thể hiển thị thông báo đồng bộ:", error);
+    }
   }
 
   return {

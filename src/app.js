@@ -1,6 +1,10 @@
 import { getPendingInterviewRecords } from "./data/database.js";
 import { registerServiceWorker, onServiceWorkerSyncRequest } from "./services/service-worker.js";
 import { syncPendingInterviews } from "./services/sync.js";
+import {
+  initializeNetworkMonitoring,
+  isNetworkConnected,
+} from "./services/network.js";
 import { getElements } from "./ui/dom.js";
 import { createInterviewFormController } from "./ui/form.js";
 import { initHistoryDialog, renderHistory } from "./ui/history.js";
@@ -25,7 +29,7 @@ async function refreshDataViews() {
 }
 
 async function syncAndRefresh({ showResultToast = false } = {}) {
-  if (!navigator.onLine) {
+  if (!isNetworkConnected()) {
     if (showResultToast) {
       showToast("Thiết bị đang offline.");
     }
@@ -46,20 +50,31 @@ async function syncAndRefresh({ showResultToast = false } = {}) {
   }
 }
 
-function bindNetworkEvents() {
-  window.addEventListener("online", async () => {
-    updateNetworkBadge(elements.networkBadge);
-    showToast("Đã có mạng. Đang đồng bộ dữ liệu...");
-    await syncAndRefresh();
+async function bindNetworkEvents() {
+  let previousConnected;
+
+  const initialStatus = await initializeNetworkMonitoring(async (status) => {
+    updateNetworkBadge(elements.networkBadge, status);
+    const wasConnected = previousConnected;
+
+    // Cập nhật trước khi await để các sự kiện Android trùng nhau không khởi động
+    // nhiều tiến trình đồng bộ cho cùng một lô dữ liệu.
+    previousConnected = status.connected;
+
+    if (status.connected && wasConnected === false) {
+      showToast("Đã có mạng. Đang đồng bộ dữ liệu...");
+      await syncAndRefresh();
+    } else if (!status.connected && wasConnected === true) {
+      showToast("Đã mất kết nối. Dữ liệu mới sẽ được lưu offline.");
+    }
   });
 
-  window.addEventListener("offline", () => {
-    updateNetworkBadge(elements.networkBadge);
-  });
+  previousConnected = initialStatus.connected;
+  updateNetworkBadge(elements.networkBadge, initialStatus);
 }
 
 async function initApp() {
-  updateNetworkBadge(elements.networkBadge);
+  await bindNetworkEvents();
 
   const settingsController = createSettingsController({
     elements,
@@ -88,14 +103,12 @@ async function initApp() {
   initHistoryDialog(elements);
   settingsController.init();
   formController.init();
-  bindNetworkEvents();
-
   elements.syncNowBtn.addEventListener("click", () => {
     syncAndRefresh({ showResultToast: true });
   });
 
   onServiceWorkerSyncRequest(async () => {
-    if (navigator.onLine) {
+    if (isNetworkConnected()) {
       await syncAndRefresh();
     }
   });
@@ -104,7 +117,7 @@ async function initApp() {
   await refreshDataViews();
   await settingsController.updateStorageInfo();
 
-  if (navigator.onLine) {
+  if (isNetworkConnected()) {
     await syncAndRefresh();
   }
 }

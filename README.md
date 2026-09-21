@@ -1,6 +1,10 @@
-# Field Interview PWA — Clean Architecture
+# Field Interview — PWA + Capacitor Android
 
 Bản refactor của ứng dụng điều tra hiện trường PWA.
+
+Ứng dụng đồng thời chạy dưới dạng website/PWA và ứng dụng Android thông qua
+[Capacitor](https://capacitorjs.com/). Mã giao diện và nghiệp vụ được dùng chung
+cho cả hai nền tảng.
 
 ## Điểm đã cải thiện
 
@@ -19,6 +23,9 @@ Bản refactor của ứng dụng điều tra hiện trường PWA.
   - desktop >= 1100px
   - màn hình rất nhỏ <= 380px
 - Có hỗ trợ `safe-area` cho điện thoại có notch.
+- Theo dõi mạng bằng Capacitor Network trên Android và sự kiện online/offline trên PWA.
+- Thông báo hoàn tất đồng bộ bằng Capacitor Local Notifications trên Android và
+  Web Notification trên PWA.
 - Có `prefers-reduced-motion` cho accessibility.
 - History hỗ trợ click + bàn phím Enter/Space.
 - Vẫn giữ nguyên:
@@ -39,6 +46,8 @@ Bản refactor của ứng dụng điều tra hiện trường PWA.
 ```text
 field-interview-pwa-clean/
 ├── index.html
+├── capacitor.config.json
+├── android/                 # Native Android project do Capacitor quản lý
 ├── manifest.webmanifest
 ├── sw.js
 ├── README_SETUP.md
@@ -94,6 +103,28 @@ Mở thư mục và chọn **Open with Live Server**.
 ```bash
 npx serve .
 ```
+
+## Chạy ứng dụng Android bằng Capacitor
+
+Yêu cầu: Node.js, Android Studio và Android SDK đã được cài đặt.
+
+```bash
+npm install
+npm run android
+```
+
+Lệnh trên build nội dung web vào `dist/`, đồng bộ sang project Android và mở
+Android Studio. Chọn emulator hoặc điện thoại đã bật USB debugging rồi nhấn
+**Run**.
+
+Nếu Android Studio đã mở và bạn chỉ vừa thay đổi mã web, chạy:
+
+```bash
+npm run cap:sync
+```
+
+Không chỉnh sửa trực tiếp nội dung trong `android/app/src/main/assets/public` vì
+thư mục này được tạo lại từ `dist/` mỗi lần chạy `cap sync`.
 
 ## Google Sheet
 

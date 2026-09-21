@@ -1,4 +1,15 @@
+function isNativePlatform() {
+  return window.Capacitor?.isNativePlatform?.() === true;
+}
+
 export async function registerServiceWorker() {
+  // Capacitor already packages the web assets inside the native application.
+  // A Service Worker is only useful for the browser/PWA build.
+  if (isNativePlatform()) {
+    console.info("Bỏ qua Service Worker trong ứng dụng Capacitor.");
+    return null;
+  }
+
   if (!("serviceWorker" in navigator)) {
     console.warn("Trình duyệt không hỗ trợ Service Worker.");
     return null;
@@ -36,7 +47,7 @@ export async function registerServiceWorker() {
 }
 
 export async function registerBackgroundSync() {
-  if (!("serviceWorker" in navigator)) {
+  if (isNativePlatform() || !("serviceWorker" in navigator)) {
     return false;
   }
 
@@ -69,7 +80,7 @@ export async function registerBackgroundSync() {
 }
 
 export function onServiceWorkerSyncRequest(callback) {
-  if (!("serviceWorker" in navigator)) {
+  if (isNativePlatform() || !("serviceWorker" in navigator)) {
     return;
   }
 

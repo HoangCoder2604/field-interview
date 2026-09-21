@@ -6,6 +6,18 @@
   "scripts": {
     "dev": "npx serve .",
     "build": "node scripts/build.mjs",
-    "preview": "npx serve dist"
+    "preview": "npx serve dist",
+    "cap:sync": "npm run build && cap sync",
+    "cap:open:android": "cap open android",
+    "android": "npm run cap:sync && cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/network": "^8.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
   }
 }

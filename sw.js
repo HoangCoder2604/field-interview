@@ -1,4 +1,4 @@
-const CACHE_NAME = "field-interview-shell-v6";
+const CACHE_NAME = "field-interview-shell-v7";
 
 const APP_SHELL = [
   "./",
@@ -16,6 +16,7 @@ const APP_SHELL = [
 
   "./src/services/image.js",
   "./src/services/location.js",
+  "./src/services/network.js",
   "./src/services/notifications.js",
   "./src/services/service-worker.js",
   "./src/services/storage.js",

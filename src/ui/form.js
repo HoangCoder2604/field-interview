@@ -1,6 +1,7 @@
 import { saveInterviewRecord } from "../data/database.js";
 import { compressImage } from "../services/image.js";
 import { getCurrentLocation } from "../services/location.js";
+import { isNetworkConnected } from "../services/network.js";
 import { registerBackgroundSync } from "../services/service-worker.js";
 import { formatDateTime } from "../utils/date.js";
 import { createSessionId } from "../utils/id.js";
@@ -114,14 +115,14 @@ export function createInterviewFormController({
     localStorage.setItem(INTERVIEWER_NAME_KEY, record.interviewer);
 
     showToast(
-      navigator.onLine
+      isNetworkConnected()
         ? "Đã lưu. Đang đồng bộ..."
         : "Đã lưu offline trên thiết bị."
     );
 
     await onSaved();
 
-    if (navigator.onLine) {
+    if (isNetworkConnected()) {
       await syncPending();
     } else {
       await registerBackgroundSync();
