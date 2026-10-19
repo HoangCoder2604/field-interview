@@ -61,8 +61,13 @@ export function createInterviewFormController({
       elements.locationText.value =
         `${session.location.lat.toFixed(6)}, ${session.location.lng.toFixed(6)}`;
 
-      elements.locationMeta.textContent =
-        `Độ chính xác khoảng ${session.location.accuracy} m`;
+      elements.locationMeta.textContent = session.location.cached
+        ? `Vị trí đã lưu lúc ${formatDateTime(session.location.capturedAt)} (không phải GPS hiện tại; hãy lấy lại khi có thể).`
+        : `GPS mới • Độ chính xác khoảng ${session.location.accuracy} m${isNetworkConnected() ? "" : " • Đang offline"}`;
+
+      if (session.location.cached) {
+        showToast("GPS chưa có tín hiệu. Đang dùng vị trí gần nhất đã lưu.");
+      }
 
       elements.getLocationBtn.textContent = "Lấy lại vị trí";
     } catch (error) {

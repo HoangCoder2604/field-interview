@@ -152,6 +152,16 @@ trong **Cài đặt**; để trống hoặc nhập lại URL mặc định sẽ 
 7. App tự sync khi nhận event `online`.
 8. Kiểm tra Sheet và Drive.
 
+### Kiểm tra GPS khi không có Wi-Fi
+
+1. Mở ứng dụng khi có mạng lần đầu để PWA lưu bộ nhớ đệm, sau đó tắt Wi-Fi **và dữ liệu di động**.
+2. Bật chức năng **Vị trí** của điện thoại và cấp quyền vị trí cho ứng dụng/trình duyệt.
+3. Kiểm tra nhãn **Offline**, chọn **Lấy vị trí**. Thiết bị có GPS có thể cần 30 giây hoặc lâu hơn để có tín hiệu ngoài trời.
+4. Dòng **GPS mới** là tọa độ vừa lấy được. Nếu GPS thất bại, ứng dụng chỉ dùng vị trí gần nhất trong vòng 15 phút, đồng thời hiển thị rõ đó là **vị trí đã lưu** (không phải tọa độ hiện tại).
+5. Trên desktop hoặc thiết bị không có bộ thu GPS, API định vị của trình duyệt có thể phụ thuộc Wi-Fi/mạng, nên không bảo đảm có tọa độ mới khi offline.
+
+Với **APK Android**, chạy `npm install` và `npm run cap:sync` để bổ sung plugin `@capacitor/geolocation` vào bản build native. Bản PWA chạy trên trình duyệt vẫn dùng Geolocation API có sẵn.
+
 ## Lưu ý
 
 Background Sync API không được hỗ trợ đồng đều trên mọi trình duyệt. Vì vậy app vẫn có fallback:

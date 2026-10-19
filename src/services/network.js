@@ -67,6 +67,13 @@ export async function initializeNetworkMonitoring(onStatusChanged) {
 
   window.addEventListener("online", notifyBrowserStatus);
   window.addEventListener("offline", notifyBrowserStatus);
+  // Some mobile browsers suspend events while the PWA is in the background.
+  // Reconcile the badge as soon as the user returns to the app.
+  window.addEventListener("pageshow", notifyBrowserStatus);
+  window.addEventListener("focus", notifyBrowserStatus);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) notifyBrowserStatus();
+  });
   notifyBrowserStatus();
 
   return getNetworkStatus();
